@@ -39,8 +39,7 @@ import uk.myoung.feedbackhelper.infrastructure.DesktopActions;
 public class Assignment implements AssignmentReadOnly, Serializable {
 
     /**
-     * Verification for deserialisation, which should change in releases with
-     * breaking changes.
+     * Verification for deserialisation, which should change in releases with breaking changes.
      *
      * Last set v5.0
      */
@@ -69,13 +68,11 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     /**
      * Constructor.
      *
-     * @param title           The title of the assignment.
-     * @param headings        The headings of the feedback document,
-     *                        newline-separated.
+     * @param title The title of the assignment.
+     * @param headings The headings of the feedback document, newline-separated.
      * @param studentListFile The student list file, which may be null.
-     * @param directory       The directory location to save assignment related
-     *                        documents.
-     * @param feedbackStyle   The style used for feedback documents.
+     * @param directory The directory location to save assignment related documents.
+     * @param feedbackStyle The style used for feedback documents.
      */
     public Assignment(String title, String headings, Path studentListFile, Path directory, FeedbackStyle feedbackStyle)
         throws NotDirectoryException, IOException {
@@ -107,7 +104,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      * Specialised ObjectInputStream for handling old assignment files.
      *
      * The present package used to be called 'model', but is now called
-     * 'uk.myoung.feedbackhelper.model'. This input stream handles old save
+     * 'uk.myoung.feedbackhelper.model'.  This input stream handles old save
      * files and deserialises to classes with the new package name if necessary.
      */
     private static class AssignmentInputStream extends ObjectInputStream {
@@ -178,8 +175,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      * Only to be called on construction of the assignment.
      *
      * @param assignmentHeadings A string containing a list of the headings to
-     *                           be used in the feedback documents, separated by
-     *                           newline characters
+     * be used in the feedback documents, separated by newline characters
      */
     private void setHeadings(String assignmentHeadings) {
         this.headings = Arrays.stream(assignmentHeadings.split("\n"))
@@ -193,7 +189,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     /**
      * Set a list of the student ids and create their feedback documents.
      *
-     * @param studentListFile     The student list file to read from.
+     * @param studentListFile The student list file to read from.
      * @param assignmentDirectory The assignment directory.
      */
     private void setStudentIds(Path studentListFile, Path assignmentDirectory) {
@@ -206,10 +202,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         }
     }
 
-    /**
-     * Get the list of students from a file or by guessing from the directory
-     * contents.
-     */
+    /** Get the list of students from a file or by guessing from the directory contents. */
     public static List<StudentId> findStudentIds(Path studentListFile, Path assignmentDirectory) {
         List<StudentId> studentIds;
         try {
@@ -230,7 +223,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     /**
      * Get a list of student IDs from the given file.
      *
-     * @throws IOException          if something goes wrong while reading
+     * @throws IOException if something goes wrong while reading
      * @throws NullPointerException if the argument is null
      */
     private static List<StudentId> findStudentIdsFromFile(Path file) throws IOException, NullPointerException {
@@ -282,8 +275,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     /**
      * Save assignment details into an FHT file.
      *
-     * @return The thread that is doing the saving, which will run in the
-     *         background.
+     * @return The thread that is doing the saving, which will run in the background.
      */
     public void save() {
         // Write to a byte array (synchronous) then copy that to a file (asynchronous)
@@ -408,10 +400,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         }
     }
 
-    /**
-     * Create a directory where exported feedback should be placed, and return its
-     * path.
-     */
+    /** Create a directory where exported feedback should be placed, and return its path. */
     private Path createFeedbackOutputDirectory() throws IOException {
         Path outputDirectory = directory.resolve(getFileSafeTitle() + "-feedback");
         if (!Files.exists(outputDirectory)) {
@@ -427,11 +416,9 @@ public class Assignment implements AssignmentReadOnly, Serializable {
     }
 
     /**
-     * Update the model with the feedback in the given sections for a particular
-     * student.
+     * Update the model with the feedback in the given sections for a particular student.
      *
-     * @param headingsAndData The feedback sections to be updated, which might not
-     *                        be all of them.
+     * @param headingsAndData The feedback sections to be updated, which might not be all of them.
      */
     public void updateFeedback(StudentId studentId, Map<String, String> headingsAndData) {
         FeedbackDocument document = feedbackDocuments.get(studentId);
@@ -483,7 +470,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
      * Change the name of a section, i.e. a heading.
      *
      * @param previousHeading A heading that currently exists in the assignment
-     * @param newHeading      The new name for that heading
+     * @param newHeading The new name for that heading
      */
     public void editHeading(String previousHeading, String newHeading) throws IllegalArgumentException {
         // Check the heading is not blank
@@ -540,7 +527,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
 
         computePhraseCounts();
 
-        notifyListeners(l -> l.handleHeadingsUpdated(headings));
+        notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
 
         save();
     }
@@ -660,10 +647,7 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         }
     }
 
-    /**
-     * Get a Phrase object representing uses of the given text phrase in the given
-     * heading.
-     */
+    /** Get a Phrase object representing uses of the given text phrase in the given heading. */
     private Phrase getPhraseCount(String heading, String text) {
         return phraseCounts
             .get(heading)

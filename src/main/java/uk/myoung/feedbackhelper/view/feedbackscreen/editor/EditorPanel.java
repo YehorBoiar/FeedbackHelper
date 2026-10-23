@@ -38,6 +38,8 @@ public class EditorPanel extends VerticalScrollablePanel {
     private BiConsumer<String, String> onEditHeading;
     private BiConsumer<String, String> onUpdateText;
     private EditingPopupMenu editingPopupMenu;
+    private boolean studentSelected;
+    private boolean locked;
 
     /**
      * Create and return a new object of this class, including setup.
@@ -215,6 +217,11 @@ public class EditorPanel extends VerticalScrollablePanel {
             if (editingPopupMenu != null) {
                 feedbackBox.registerPopupMenu(editingPopupMenu);
             }
+            if (isStudentEditable()) {
+                feedbackBox.enableTextArea();
+            } else if (locked) {
+                feedbackBox.setLocked(true);
+            }
             this.feedbackBoxes.add(feedbackBox);
             this.headingAndFeedbackBox.put(addedHeading, feedbackBox);
             this.feedbackBoxesPanel.add(feedbackBox);
@@ -235,6 +242,7 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     /** Update this panel to display the given student ID. */
     public void setStudentId(StudentId studentId) {
+        this.studentSelected = studentId != null;
         setTitleLabel(studentId.toString());
         gradeBox.enableChooser();
 
@@ -251,6 +259,9 @@ public class EditorPanel extends VerticalScrollablePanel {
      */
     public void setSectionContents(String heading, String contents) {
         FeedbackBox box = headingAndFeedbackBox.get(heading);
+        if (box == null) {
+            return;
+        }
         box.setContents("");
         box.setContents(contents);
         box.enableTextArea(); // allow editing now a student is selected
@@ -276,7 +287,10 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param phrase The text to insert.
      */
     public void insertPhraseIntoFeedbackBox(String heading, String phrase) {
-        this.headingAndFeedbackBox.get(heading).insertPhrase(phrase);
+        FeedbackBox box = this.headingAndFeedbackBox.get(heading);
+        if (box != null) {
+            box.insertPhrase(phrase);
+        }
     }
 
     /**
@@ -309,14 +323,27 @@ public class EditorPanel extends VerticalScrollablePanel {
 
     public void switchSection(String oldHeading, String newHeading) {
         if (oldHeading != null) {
-            headingAndFeedbackBox.get(oldHeading).switchAway();
+            FeedbackBox oldBox = headingAndFeedbackBox.get(oldHeading);
+            if (oldBox != null) {
+                oldBox.switchAway();
+            }
         }
-        headingAndFeedbackBox.get(newHeading).switchTo();
+        if (newHeading != null) {
+            FeedbackBox newBox = headingAndFeedbackBox.get(newHeading);
+            if (newBox != null) {
+                newBox.switchTo();
+            }
+        }
     }
 
     public void setLocked(boolean locked) {
+        this.locked = locked;
         feedbackBoxes.forEach(box -> box.setLocked(locked));
         gradeBox.setLocked(locked);
         markAsDoneButton.setSelected(locked);
+    }
+
+    public boolean isStudentEditable() {
+        return studentSelected && !locked;
     }
 }

@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
 import uk.myoung.feedbackhelper.model.StudentId;
 import uk.myoung.feedbackhelper.view.VerticalScrollablePanel;
 import uk.myoung.feedbackhelper.view.style.BorderCreator;
@@ -160,14 +162,35 @@ public class EditorPanel extends VerticalScrollablePanel {
      * @param headings The headings of the feedback boxes to reset.
      */
     public void updateHeadings(List<String> newHeadings) {
+        if (this.headings.equals(newHeadings)) {
+            return;
+        }
         if (newHeadings.size() == this.headings.size()) {
-            renameHeadings(newHeadings);
+            if (this.headings.containsAll(newHeadings)) {
+                reorderHeadings(newHeadings);
+            } else {
+                renameHeadings(newHeadings);
+            }
         } else if (newHeadings.size() < this.headings.size()) {
             removeHeadings(newHeadings);
         } else {
             addHeadings(newHeadings);
         }
         this.headings = newHeadings;
+    }
+
+    private void reorderHeadings(List<String> newHeadings) {
+        this.feedbackBoxesPanel.removeAll();
+        this.feedbackBoxes.clear();
+        for (String heading : newHeadings) {
+            FeedbackBox feedbackBox = this.headingAndFeedbackBox.get(heading);
+            if (feedbackBox != null) {
+                this.feedbackBoxes.add(feedbackBox);
+                this.feedbackBoxesPanel.add(feedbackBox);
+            }
+        }
+        this.feedbackBoxesPanel.revalidate();
+        this.feedbackBoxesPanel.repaint();
     }
 
     private void renameHeadings(List<String> newHeadings) {

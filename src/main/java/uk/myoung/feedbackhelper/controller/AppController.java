@@ -160,6 +160,16 @@ public class AppController {
         assignment.deleteHeading(heading);
     }
 
+    /**
+     * Reorder a heading in the assignment.
+     *
+     * @param heading  The heading to reorder.
+     * @param movement The direction and distance to move (-1 for up, 1 for down).
+     */
+    public void reorderHeading(String heading, int movement) {
+        assignment.reorderHeading(heading, movement);
+    }
+
     /* USER EXPORTS AND OPERATIONS */
 
     /**

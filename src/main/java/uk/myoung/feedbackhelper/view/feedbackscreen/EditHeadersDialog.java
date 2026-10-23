@@ -34,6 +34,8 @@ public class EditHeadersDialog extends JDialog {
     private JButton addButton;
     private JButton renameButton;
     private JButton deleteButton;
+    private JButton moveUpButton;
+    private JButton moveDownButton;
     private JButton closeButton;
 
     /**
@@ -87,23 +89,44 @@ public class EditHeadersDialog extends JDialog {
         add(scrollPane, BorderLayout.CENTER);
 
         // Right: Buttons panel
-        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, SPACING));
+        JPanel buttonsPanel = new JPanel(new GridLayout(6, 1, 0, SPACING));
         addButton = new JButton("Add");
         renameButton = new JButton("Rename");
         deleteButton = new JButton("Delete");
+        moveUpButton = new JButton("Move Up");
+        moveDownButton = new JButton("Move Down");
         closeButton = new JButton("Close");
 
         closeButton.addActionListener(e -> dispose());
         addButton.addActionListener(e -> addHeader());
         renameButton.addActionListener(e -> renameSelectedHeader());
         deleteButton.addActionListener(e -> deleteSelectedHeader());
+        moveUpButton.addActionListener(e -> moveSelectedHeader(-1));
+        moveDownButton.addActionListener(e -> moveSelectedHeader(1));
 
         buttonsPanel.add(addButton);
         buttonsPanel.add(renameButton);
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(moveUpButton);
+        buttonsPanel.add(moveDownButton);
         buttonsPanel.add(closeButton);
 
         add(buttonsPanel, BorderLayout.EAST);
+    }
+
+    private void moveSelectedHeader(int direction) {
+        int selectedIndex = headersList.getSelectedIndex();
+        int newIndex = selectedIndex + direction;
+        if (newIndex < 0 || newIndex >= listModel.size()) {
+            return;
+        }
+
+        String heading = listModel.remove(selectedIndex);
+        listModel.add(newIndex, heading);
+        headersList.setSelectedIndex(newIndex);
+        if (controller != null) {
+            controller.reorderHeading(heading, direction);
+        }
     }
 
     private void deleteSelectedHeader() {

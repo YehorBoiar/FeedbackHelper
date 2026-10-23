@@ -558,6 +558,23 @@ public class Assignment implements AssignmentReadOnly, Serializable {
         save();
     }
 
+    /**
+     * Reorder a heading in the assignment.
+     *
+     * @param heading  The heading to reorder.
+     * @param movement The direction and distance to move (-1 for up, 1 for down).
+     */
+    public void reorderHeading(String heading, int movement) {
+        int oldPos = headings.indexOf(heading);
+        int newPos = oldPos + movement;
+        if (oldPos != -1 && newPos >= 0 && newPos < headings.size()) {
+            headings.remove(oldPos);
+            headings.add(newPos, heading);
+            notifyListeners(l -> l.handleHeadingsUpdated(List.copyOf(headings)));
+            save();
+        }
+    }
+
     //
     // PHRASE HANDLING
     //
